@@ -70,14 +70,14 @@ public final class Activator
 
 
             } else {
-                System.out.println("Bundle = null");
+                System.out.println("core installInternalBundleJars() Bundle = null for " + bundleName);
             }
         } catch(Exception ex) {
             ex.printStackTrace();
         }
 
         if(installedBundle == null) {
-            System.out.println("Failed to load bundle exiting!");
+            System.out.println("core installInternalBundleJars () Failed to load bundle " + bundleName + " exiting!");
             System.exit(0);
         }
 
