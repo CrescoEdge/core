@@ -22,7 +22,7 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>6.0.0</version>
+            <version>7.0.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -30,14 +30,14 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.cmpn</artifactId>
-            <version>6.0.0</version>
+            <version>7.0.0</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.annotation</artifactId>
-            <version>6.0.0</version>
+            <version>7.0.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.osgi/org.osgi.service.component.annotations -->
