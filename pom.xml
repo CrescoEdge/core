@@ -18,14 +18,14 @@
 
     <dependencies>
 
-        <!-- https://mvnrepository.com/artifact/org.osgi/osgi.core -->
+        <!-- https://mvnrepository.com/artifact/org.osgi/org.osgi.core -->
+
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>osgi.core</artifactId>
+            <artifactId>org.osgi.core</artifactId>
             <version>6.0.0</version>
             <scope>provided</scope>
         </dependency>
-
 
         <!-- https://mvnrepository.com/artifact/org.osgi/osgi.cmpn -->
         <dependency>
@@ -35,12 +35,10 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.osgi/osgi.annotation -->
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>osgi.annotation</artifactId>
+            <artifactId>org.osgi.annotation</artifactId>
             <version>6.0.0</version>
-            <scope>provided</scope>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.osgi/org.osgi.service.component.annotations -->
