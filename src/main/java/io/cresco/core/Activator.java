@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+
+
+
 /**
  * Bundle Activator.<br/>
  * Looks up the Configuration Admin service and on activation will configure Pax Logging.
@@ -36,6 +39,7 @@ public final class Activator
             throws Exception
     {
 
+
         levelList = new ArrayList<>();
         levelList.add("OFF");
         levelList.add("FATAL");
@@ -58,6 +62,8 @@ public final class Activator
 
 
     private Bundle installInternalBundleJars(BundleContext context, String bundleName) {
+
+
 
         Bundle installedBundle = null;
         try {
