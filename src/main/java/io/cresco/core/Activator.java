@@ -108,10 +108,7 @@ public final class Activator
      *
      * @throws IOException - Re-thrown
      */
-    private void updateConfiguration( BundleContext bundleContext,
-                                      final String pattern )
-            throws IOException
-    {
+    private void updateConfiguration( BundleContext bundleContext, final String pattern ) throws IOException {
 
         String rootLogLevel = System.getProperty("root_log_level","INFO");
         rootLogLevel = rootLogLevel.toUpperCase();
@@ -142,6 +139,7 @@ public final class Activator
         log4jProps.put( "log4j.logger.org.eclipse.jetty","ERROR");
         log4jProps.put( "log4j.logger.org.apache.activemq.broker","ERROR");
         log4jProps.put( "log4j.logger.org.apache.activemq","ERROR");
+        log4jProps.put( "log4j.logger.org.apache.aries","ERROR");
         log4jProps.put( "log4j.logger.org.osgi","OFF");
         log4jProps.put( "log4j.logger.osgi","OFF");
 
