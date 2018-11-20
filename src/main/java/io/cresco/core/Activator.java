@@ -131,6 +131,7 @@ public final class Activator
         log4jProps.put( "log4j.category.io.netty","ERROR");
         log4jProps.put( "log4j.category.org.hibernate","ERROR");
         log4jProps.put( "log4j.category.org.apache.activemq","ERROR");
+        log4jProps.put( "log4j.category.org.apache.aries","ERROR");
         log4jProps.put( "log4j.logger.org.apache.activemq.spring","ERROR");
         log4jProps.put( "log4j.logger.org.apache.activemq.web.handler","ERROR");
         log4jProps.put( "log4j.logger.org.springframework","ERROR");
