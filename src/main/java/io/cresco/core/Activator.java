@@ -132,6 +132,8 @@ public final class Activator
         log4jProps.put( "log4j.category.org.hibernate","ERROR");
         log4jProps.put( "log4j.category.org.apache.activemq","ERROR");
         log4jProps.put( "log4j.category.org.apache.aries","ERROR");
+        log4jProps.put( "log4j.category.org.apache.cxf","ERROR");
+
         log4jProps.put( "log4j.logger.org.apache.activemq.spring","ERROR");
         log4jProps.put( "log4j.logger.org.apache.activemq.web.handler","ERROR");
         log4jProps.put( "log4j.logger.org.springframework","ERROR");
@@ -142,6 +144,7 @@ public final class Activator
         log4jProps.put( "log4j.logger.org.apache.activemq","ERROR");
         log4jProps.put( "log4j.logger.org.apache.aries","ERROR");
         log4jProps.put( "log4j.logger.org.apache.aries.jax.rs.whiteboard","ERROR");
+        log4jProps.put( "log4j.logger.org.apache.cxf","ERROR");
         log4jProps.put( "log4j.logger.org.osgi","OFF");
         log4jProps.put( "log4j.logger.osgi","OFF");
 
