@@ -144,6 +144,7 @@ public final class Activator
         log4jProps.put( "log4j.logger.org.apache.activemq","ERROR");
         log4jProps.put( "log4j.logger.org.apache.aries","ERROR");
         //log4jProps.put( "log4j.logger.org.apache.aries.jax.rs.whiteboard","ERROR");
+        log4jProps.put( "log4j.logger.oshi.*","ERROR");
         log4jProps.put( "log4j.logger.org.apache.cxf","ERROR");
         log4jProps.put( "log4j.logger.org.osgi","OFF");
         log4jProps.put( "log4j.logger.osgi","OFF");
