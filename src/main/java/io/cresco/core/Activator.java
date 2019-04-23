@@ -116,6 +116,7 @@ public final class Activator
             rootLogLevel = "INFO";
         }
 
+
         ConfigurationAdmin configAdmin = getConfigurationAdmin( bundleContext );
         Configuration configuration = configAdmin.getConfiguration( "org.ops4j.pax.logging", null );
 
@@ -130,7 +131,7 @@ public final class Activator
         log4jProps.put( "log4j.appender.FILE.File","log/log.out");
         log4jProps.put( "log4j.appender.FILE.ImmediateFlush","true");
         //log4jProps.put( "log4j.appender.FILE.Threshold","ALL");
-        log4jProps.put( "log4j.appender.FILE.Append","false");
+        log4jProps.put( "log4j.appender.FILE.Append","true");
         log4jProps.put( "log4j.appender.FILE.layout","org.apache.log4j.PatternLayout");
         log4jProps.put( "log4j.appender.FILE.layout.conversionPattern", pattern);
 
