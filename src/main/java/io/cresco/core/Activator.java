@@ -116,14 +116,24 @@ public final class Activator
             rootLogLevel = "INFO";
         }
 
+
         ConfigurationAdmin configAdmin = getConfigurationAdmin( bundleContext );
         Configuration configuration = configAdmin.getConfiguration( "org.ops4j.pax.logging", null );
 
         Hashtable<String, Object> log4jProps = new Hashtable<>();
-        log4jProps.put( "log4j.rootLogger", rootLogLevel + ", CONSOLE" );
+        log4jProps.put( "log4j.rootLogger", rootLogLevel + ", CONSOLE, FILE" );
+
         log4jProps.put( "log4j.appender.CONSOLE", "org.apache.log4j.ConsoleAppender" );
         log4jProps.put( "log4j.appender.CONSOLE.layout", "org.apache.log4j.PatternLayout" );
         log4jProps.put( "log4j.appender.CONSOLE.layout.ConversionPattern", pattern );
+
+        log4jProps.put( "log4j.appender.FILE","org.apache.log4j.FileAppender");
+        log4jProps.put( "log4j.appender.FILE.File","log/log.out");
+        log4jProps.put( "log4j.appender.FILE.ImmediateFlush","true");
+        //log4jProps.put( "log4j.appender.FILE.Threshold","ALL");
+        log4jProps.put( "log4j.appender.FILE.Append","true");
+        log4jProps.put( "log4j.appender.FILE.layout","org.apache.log4j.PatternLayout");
+        log4jProps.put( "log4j.appender.FILE.layout.conversionPattern", pattern);
 
         log4jProps.put( "log4j.category.org.apache.felix","ERROR");
         log4jProps.put( "log4j.category.org.ops4j.pax","ERROR");
