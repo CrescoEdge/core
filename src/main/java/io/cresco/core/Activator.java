@@ -136,7 +136,7 @@ public final class Activator
 
         log4jProps.put( "log4j.category.org.apache.felix","ERROR");
         log4jProps.put( "log4j.category.org.ops4j.pax","ERROR");
-        log4jProps.put( "log4j.category.com.orientechnologies","ERROR");
+        //log4jProps.put( "log4j.category.com.orientechnologies","ERROR");
         log4jProps.put( "log4j.category.io.netty","ERROR");
         log4jProps.put( "log4j.category.org.hibernate","ERROR");
         log4jProps.put( "log4j.category.org.apache.activemq","ERROR");
