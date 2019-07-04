@@ -6,6 +6,9 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.component.runtime.ServiceComponentRuntime;
+import org.osgi.service.component.runtime.dto.ComponentDescriptionDTO;
+
 
 import java.io.IOException;
 import java.net.URL;
@@ -27,7 +30,6 @@ import java.util.List;
 public final class Activator
         implements BundleActivator
 {
-
     private List<String> levelList;
 
 
@@ -36,9 +38,7 @@ public final class Activator
      * Configures Pax Logging via Configuration Admin.
      */
     public void start( final BundleContext bundleContext )
-            throws Exception
-    {
-
+            throws Exception {
 
         levelList = new ArrayList<>();
         levelList.add("OFF");
@@ -60,6 +60,77 @@ public final class Activator
 
     }
 
+
+    /**
+     * {@inheritDoc}
+     * UnConfigures Pax Logging via Configuration Admin.
+     */
+    public void stop( final BundleContext bundleContext )
+            throws Exception
+    {
+        updateConfiguration( bundleContext, "%-4r [%t] %-5p %c %x - %m%n" );
+
+
+        System.out.println("--STOPPING CONTROLLER");
+
+        System.out.println("Stopped listening for service events.");
+
+        ServiceComponentRuntime serviceComponentRuntime = getServiceComponentRuntime(bundleContext);
+
+        ComponentDescriptionDTO agentDTO = serviceComponentRuntime.getComponentDescriptionDTO(bundleContext.getBundle(), "AgentService.class");
+        if(agentDTO != null) {
+            System.out.println(agentDTO.deactivate);
+        } else {
+            System.out.println("AGENT NOT FOUND");
+        }
+        //Returns the ComponentDescriptionDTO declared with the specified name by the specified bundle.
+
+        System.out.println("--STOPPED CONTROLLER");
+
+    }
+
+
+    private ServiceComponentRuntime getServiceComponentRuntime(BundleContext srcBc) {
+
+        ServiceComponentRuntime serviceComponentRuntime = null;
+        try {
+
+            ServiceReference<?>[] servRefs = null;
+
+            while(servRefs == null) {
+                servRefs = srcBc.getServiceReferences(ServiceComponentRuntime.class.getName(), null);
+
+                if (servRefs == null || servRefs.length == 0) {
+
+                    System.out.println("ERROR: service runtime not found, this will cause problems with shutdown");
+                    Thread.sleep(1000);
+
+                } else {
+
+                    for (ServiceReference sr : servRefs) {
+
+                        System.out.println("BLAH");
+
+                        boolean assign = sr.isAssignableTo(srcBc.getBundle(), ServiceComponentRuntime.class.getName());
+                        if (assign) {
+
+                            ServiceReference scrServiceRef = srcBc.getServiceReference(ServiceComponentRuntime.class.getName());
+                            serviceComponentRuntime = (ServiceComponentRuntime) srcBc.getService(scrServiceRef);
+
+                        } else {
+                            System.out.println("Unable to assign service runtime");
+                        }
+
+                    }
+                }
+            }
+
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return serviceComponentRuntime;
+    }
 
     private Bundle installInternalBundleJars(BundleContext context, String bundleName) {
 
@@ -90,15 +161,6 @@ public final class Activator
         return installedBundle;
     }
 
-    /**
-     * {@inheritDoc}
-     * UnConfigures Pax Logging via Configuration Admin.
-     */
-    public void stop( final BundleContext bundleContext )
-            throws Exception
-    {
-        updateConfiguration( bundleContext, "%-4r [%t] %-5p %c %x - %m%n" );
-    }
 
     /**
      * Updates Pax Logging configuration to a specifid conversion pattern.

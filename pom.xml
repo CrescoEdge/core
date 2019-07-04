@@ -42,12 +42,14 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.osgi/org.osgi.service.component.annotations -->
+        <!--
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.service.component.annotations</artifactId>
             <version>1.4.0</version>
             <scope>provided</scope>
         </dependency>
+        -->
 
         <!-- https://mvnrepository.com/artifact/org.osgi/org.osgi.service.metatype.annotations -->
         <dependency>
@@ -64,6 +66,14 @@
             <version>1.6.0</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.component</artifactId>
+            <version>1.4.0</version>
+            <scope>provided</scope>
+        </dependency>
+
 
 
     </dependencies>
