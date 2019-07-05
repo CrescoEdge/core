@@ -86,7 +86,7 @@ public final class Activator
                     }
 
                 } else {
-                    System.out.println("AGENT NOT FOUND OR NOT ENABLED");
+                    System.out.println("ERROR: AGENT NOT FOUND OR NOT ENABLED!");
                 }
 
             }
