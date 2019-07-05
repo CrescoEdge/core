@@ -4,16 +4,11 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.runtime.ServiceComponentRuntime;
 import org.osgi.service.component.runtime.dto.ComponentDescriptionDTO;
 
 
-import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 
 
@@ -57,27 +52,48 @@ public final class Activator
      * UnConfigures Pax Logging via Configuration Admin.
      */
     public void stop( final BundleContext bundleContext )
-            throws Exception
-    {
+            throws Exception {
 
 
-        System.out.println("--STOPPING CONTROLLER");
+        try {
 
-        System.out.println("Stopped listening for service events.");
+            ServiceComponentRuntime serviceComponentRuntime = getServiceComponentRuntime(bundleContext);
 
-        /*
-        ServiceComponentRuntime serviceComponentRuntime = getServiceComponentRuntime(bundleContext);
+            Bundle controllerBundle = null;
 
-        ComponentDescriptionDTO agentDTO = serviceComponentRuntime.getComponentDescriptionDTO(bundleContext.getBundle(), "AgentService.class");
-        if(agentDTO != null) {
-            System.out.println(agentDTO.deactivate);
-        } else {
-            System.out.println("AGENT NOT FOUND");
+
+            for (Bundle bundle : bundleContext.getBundles()) {
+
+                String bundleName = bundle.getSymbolicName();
+                if (bundleName != null) {
+                    if (bundleName.equals("io.cresco.controller")) {
+                        controllerBundle = bundle;
+                    }
+                }
+            }
+
+            if (controllerBundle != null) {
+
+
+                ComponentDescriptionDTO agentDTO = serviceComponentRuntime.getComponentDescriptionDTO(controllerBundle, "io.cresco.agent.core.AgentServiceImpl");
+                if ((agentDTO != null) && (serviceComponentRuntime.isComponentEnabled(agentDTO))) {
+
+                    serviceComponentRuntime.disableComponent(agentDTO);
+
+                    while (!serviceComponentRuntime.disableComponent(agentDTO).isDone()) {
+                        Thread.sleep(100);
+                        //System.out.println("Shutdown didn't talk");
+                    }
+
+                } else {
+                    System.out.println("AGENT NOT FOUND OR NOT ENABLED");
+                }
+
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-        */
-        //Returns the ComponentDescriptionDTO declared with the specified name by the specified bundle.
-
-        System.out.println("--STOPPED CONTROLLER");
 
     }
 
@@ -100,8 +116,6 @@ public final class Activator
                 } else {
 
                     for (ServiceReference sr : servRefs) {
-
-                        System.out.println("BLAH");
 
                         boolean assign = sr.isAssignableTo(srcBc.getBundle(), ServiceComponentRuntime.class.getName());
                         if (assign) {
