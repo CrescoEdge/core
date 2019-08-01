@@ -39,18 +39,8 @@
             <groupId>org.osgi</groupId>
             <artifactId>osgi.annotation</artifactId>
             <version>6.0.1</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.osgi/org.osgi.service.component.annotations -->
-        <!--
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.service.component.annotations</artifactId>
-            <version>1.4.0</version>
             <scope>provided</scope>
         </dependency>
-        -->
-
 
 
         <!-- https://mvnrepository.com/artifact/org.osgi/org.osgi.service.metatype.annotations -->
@@ -75,7 +65,6 @@
             <version>1.4.0</version>
             <scope>provided</scope>
         </dependency>
-
 
 
     </dependencies>
@@ -106,7 +95,7 @@
                         <Bundle-Vendor>Cresco.io</Bundle-Vendor>
                         <Bundle-Version>${project.version}-${maven.build.timestamp}</Bundle-Version>
                         <Bundle-Activator>io.cresco.core.Activator</Bundle-Activator>
-                        <Import-Package>*;resolution:=optional</Import-Package>
+                        <Import-Package>org.osgi.service.component.runtime.ServiceComponentRuntime;*;resolution:=optional</Import-Package>
                         <Embed-Dependency>!org.osgi.*;!osgi.cmpn.*;!library;*</Embed-Dependency>
                         <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
                     </instructions>

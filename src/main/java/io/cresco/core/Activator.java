@@ -74,21 +74,23 @@ public final class Activator
 
             if (controllerBundle != null) {
 
+                if(serviceComponentRuntime != null) {
+                    ComponentDescriptionDTO agentDTO = serviceComponentRuntime.getComponentDescriptionDTO(controllerBundle, "io.cresco.agent.core.AgentServiceImpl");
+                    if ((agentDTO != null) && (serviceComponentRuntime.isComponentEnabled(agentDTO))) {
 
-                ComponentDescriptionDTO agentDTO = serviceComponentRuntime.getComponentDescriptionDTO(controllerBundle, "io.cresco.agent.core.AgentServiceImpl");
-                if ((agentDTO != null) && (serviceComponentRuntime.isComponentEnabled(agentDTO))) {
+                        serviceComponentRuntime.disableComponent(agentDTO);
 
-                    serviceComponentRuntime.disableComponent(agentDTO);
+                        while (!serviceComponentRuntime.disableComponent(agentDTO).isDone()) {
+                            Thread.sleep(100);
+                            //System.out.println("Shutdown didn't talk");
+                        }
 
-                    while (!serviceComponentRuntime.disableComponent(agentDTO).isDone()) {
-                        Thread.sleep(100);
-                        //System.out.println("Shutdown didn't talk");
+                    } else {
+                        System.out.println("ERROR: AGENT NOT FOUND OR NOT ENABLED!");
                     }
-
                 } else {
-                    System.out.println("ERROR: AGENT NOT FOUND OR NOT ENABLED!");
+                    System.out.println("ERROR: serviceComponentRuntime == null");
                 }
-
             }
 
         } catch (Exception ex) {
