@@ -94,7 +94,9 @@ public final class Activator
             }
 
         } catch (Exception ex) {
+            System.out.println("Logger Out : " + ex.getMessage());
             ex.printStackTrace();
+
         }
 
     }
@@ -135,6 +137,7 @@ public final class Activator
 
 
         } catch (Exception ex) {
+            System.out.println("Logger Out : " + ex.getMessage());
             ex.printStackTrace();
         }
         return serviceComponentRuntime;
@@ -158,6 +161,7 @@ public final class Activator
                 System.out.println("core installInternalBundleJars() Bundle = null for " + bundleName);
             }
         } catch(Exception ex) {
+            System.out.println("Logger Out : " + ex.getMessage());
             ex.printStackTrace();
         }
 
