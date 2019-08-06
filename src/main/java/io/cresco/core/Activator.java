@@ -15,46 +15,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-/**
- * Bundle Activator.<br/>
- * Looks up the Configuration Admin service and on activation will configure Pax Logging.
- * On deactivation will unconfigure Pax Logging.
- *
- * @author Alin Dreghiciu (adreghiciu@gmail.com)
- * @since 0.2.2, November 26, 2008
- */
-public final class Activator
-        implements BundleActivator
-{
+public final class Activator implements BundleActivator {
     private List<String> levelList;
     private Logger logService;
 
-    /**
-     * {@inheritDoc}
-     * Configures Pax Logging via Configuration Admin.
-     */
     public void start( final BundleContext bundleContext )
             throws Exception {
-
 
         String logIdent = this.getClass().getName().toLowerCase();
         logService = LoggerFactory.getLogger(logIdent);
 
-        /*
-        installInternalBundleJars(bundleContext,"org.osgi.service.cm-1.6.0.jar").start();
-        Bundle loggerService = installInternalBundleJars(bundleContext,"pax-logging-service-1.10.1.jar");
-        Bundle loggerAPI = installInternalBundleJars(bundleContext,"pax-logging-api-1.10.1.jar");
-        loggerService.start();
-        loggerAPI.start();
-        */
-
     }
 
-
-    /**
-     * {@inheritDoc}
-     * UnConfigures Pax Logging via Configuration Admin.
-     */
     public void stop( final BundleContext bundleContext )
             throws Exception {
 
