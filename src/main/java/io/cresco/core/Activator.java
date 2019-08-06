@@ -11,20 +11,50 @@ import org.osgi.service.component.runtime.dto.ComponentDescriptionDTO;
 import java.net.URL;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
-
-
-public final class Activator implements BundleActivator
+/**
+ * Bundle Activator.<br/>
+ * Looks up the Configuration Admin service and on activation will configure Pax Logging.
+ * On deactivation will unconfigure Pax Logging.
+ *
+ * @author Alin Dreghiciu (adreghiciu@gmail.com)
+ * @since 0.2.2, November 26, 2008
+ */
+public final class Activator
+        implements BundleActivator
 {
     private List<String> levelList;
+    private Logger logService;
 
+    /**
+     * {@inheritDoc}
+     * Configures Pax Logging via Configuration Admin.
+     */
     public void start( final BundleContext bundleContext )
             throws Exception {
+
+
+        String logIdent = this.getClass().getName().toLowerCase();
+        logService = LoggerFactory.getLogger(logIdent);
+
+        /*
+        installInternalBundleJars(bundleContext,"org.osgi.service.cm-1.6.0.jar").start();
+        Bundle loggerService = installInternalBundleJars(bundleContext,"pax-logging-service-1.10.1.jar");
+        Bundle loggerAPI = installInternalBundleJars(bundleContext,"pax-logging-api-1.10.1.jar");
+        loggerService.start();
+        loggerAPI.start();
+        */
 
     }
 
 
+    /**
+     * {@inheritDoc}
+     * UnConfigures Pax Logging via Configuration Admin.
+     */
     public void stop( final BundleContext bundleContext )
             throws Exception {
 
@@ -60,15 +90,17 @@ public final class Activator implements BundleActivator
                         }
 
                     } else {
-                        System.out.println("ERROR: AGENT NOT FOUND OR NOT ENABLED!");
+                        logService.error("AGENT NOT FOUND OR NOT ENABLED!");
+                        //System.out.println("ERROR: AGENT NOT FOUND OR NOT ENABLED!");
                     }
                 } else {
-                    System.out.println("ERROR: serviceComponentRuntime == null");
+                    logService.error("ERROR: serviceComponentRuntime == null");
                 }
             }
 
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logService.error("Logger Out : " + ex.getMessage());
+            //ex.printStackTrace();
         }
 
     }
@@ -86,7 +118,7 @@ public final class Activator implements BundleActivator
 
                 if (servRefs == null || servRefs.length == 0) {
 
-                    System.out.println("ERROR: service runtime not found, this will cause problems with shutdown");
+                    logService.error("ERROR: service runtime not found, this will cause problems with shutdown");
                     Thread.sleep(1000);
 
                 } else {
@@ -100,7 +132,7 @@ public final class Activator implements BundleActivator
                             serviceComponentRuntime = (ServiceComponentRuntime) srcBc.getService(scrServiceRef);
 
                         } else {
-                            System.out.println("Unable to assign service runtime");
+                            logService.error("Unable to assign service runtime");
                         }
 
                     }
@@ -109,7 +141,8 @@ public final class Activator implements BundleActivator
 
 
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logService.error("Logger Out : " + ex.getMessage());
+            //ex.printStackTrace();
         }
         return serviceComponentRuntime;
     }
@@ -129,14 +162,15 @@ public final class Activator implements BundleActivator
 
 
             } else {
-                System.out.println("core installInternalBundleJars() Bundle = null for " + bundleName);
+                logService.error("core installInternalBundleJars() Bundle = null for " + bundleName);
             }
         } catch(Exception ex) {
-            ex.printStackTrace();
+            logService.error("Logger Out : " + ex.getMessage());
+            //ex.printStackTrace();
         }
 
         if(installedBundle == null) {
-            System.out.println("core installInternalBundleJars () Failed to load bundle " + bundleName + " exiting!");
+            logService.error("core installInternalBundleJars () Failed to load bundle " + bundleName + " exiting!");
             System.exit(0);
         }
 
