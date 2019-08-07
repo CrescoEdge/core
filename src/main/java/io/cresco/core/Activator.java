@@ -80,7 +80,8 @@ public final class Activator implements BundleActivator {
                 while (servRefs == null) {
                     servRefs = srcBc.getServiceReferences(ServiceComponentRuntime.class.getName(), null);
 
-                    if(srcBc.getProperty(Constants.FRAMEWORK_VENDOR) != null) {
+                    if(srcBc.getProperty(Constants.FRAMEWORK_VENDOR) == null) {
+                        logService.info("Unit Test");
                         return null;
                     } else if (servRefs == null || servRefs.length == 0) {
                         logService.error("ERROR: service runtime not found, this will cause problems with shutdown");
