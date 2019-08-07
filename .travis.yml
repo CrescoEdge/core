@@ -2,10 +2,14 @@ language: java
 addons:
   sonarcloud:
     organization: crescoedge
+    coverage:
+      jacoco:
+        xmlReportPaths=target/site/jacoco/jacoco.xml
     token:
       secure: iyYeGqcKYGs60Fo0FpmxHbPBS5xxyrLuPaJiByVHbutXT+/DVqsime5ofiY4IZ45nc2bttIXQxzMT5B1UxrAzTxEOIMgSMuexojKupMz3VaCHhMi1W059PA1jg/8qapVnFyFlUUGHUyAojzUfFAyYEFXXyEy4JqJTgbR8yAPTQ+Xps81VMy3e0nq7SBkTf/XNwlMsNFPAH8gJqppeCwbUQ6VCqLFadiLrtFJOtvYQNfIswzMtJAmoYXCOzmn/tgLXWOIeEbIgrBv1rYiil4PI29p0748U3pzYM42KQDlq/tGyL8dYKoVCuhWx+Arfdy7vaQDbGNfk2paCHDy9FX9mnV1YCbOKDByZtniPcC+bfjlkNWjxAsAuFO3GrozMXntyiiNHIfLC5xcRIfxLUfcsYJh9UM8iwOWmgAhsehgLQ85B40VHRjz/qFt/HqpGUxkmvYwCcxTqTt+RjD5fXiYMtflV98DczVbiRB1PPv4YPIp05IAipGY/IQNCqjQZ/oTabPJmKtJG6D0Md2fxvY8wPZ9EAk8vhgKJyBlUa2cSRzGM3pVgCtwlWfPaYTXqX8W+ZswDI4MQKh69p2M1Y1GE2zxhJImw7QfoTFSm0mYvb0BUTJFddVqNZyB5J652RiY1z176isPESebNBGpMsjz2g9yCDBKGokSs/6pFghh3rk=
 script:
-- mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.failure.ignore=false -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+- mvn clean test org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
+
 after_success:
 - mvn package bundle:bundle
 - mvn deploy:deploy-file -Dfile=target/core-1.0-SNAPSHOT.jar -Durl=https://oss.sonatype.org/content/repositories/snapshots
