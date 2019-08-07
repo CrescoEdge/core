@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 
 public final class Activator implements BundleActivator {
-    private List<String> levelList;
+
     private Logger logService;
 
     public void start( final BundleContext bundleContext ) throws Exception {

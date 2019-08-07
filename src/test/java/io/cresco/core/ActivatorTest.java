@@ -4,10 +4,6 @@ import org.apache.sling.testing.mock.osgi.MockOsgi;
 import org.junit.jupiter.api.Test;
 import org.osgi.framework.BundleContext;
 
-import java.util.HashMap;
-import java.util.Map;
-
-
 class ActivatorTest {
 
 
