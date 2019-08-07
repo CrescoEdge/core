@@ -1,14 +1,9 @@
 package io.cresco.core;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
+import org.osgi.framework.*;
 import org.osgi.service.component.runtime.ServiceComponentRuntime;
 import org.osgi.service.component.runtime.dto.ComponentDescriptionDTO;
 
-
-import java.net.URL;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -19,16 +14,14 @@ public final class Activator implements BundleActivator {
     private List<String> levelList;
     private Logger logService;
 
-    public void start( final BundleContext bundleContext )
-            throws Exception {
+    public void start( final BundleContext bundleContext ) throws Exception {
 
         String logIdent = this.getClass().getName().toLowerCase();
         logService = LoggerFactory.getLogger(logIdent);
 
     }
 
-    public void stop( final BundleContext bundleContext )
-            throws Exception {
+    public void stop( final BundleContext bundleContext ) throws Exception {
 
 
         try {
@@ -77,51 +70,55 @@ public final class Activator implements BundleActivator {
 
     }
 
-
     private ServiceComponentRuntime getServiceComponentRuntime(BundleContext srcBc) {
 
+
         ServiceComponentRuntime serviceComponentRuntime = null;
-        try {
 
-            ServiceReference<?>[] servRefs = null;
+        if(srcBc.getProperty(Constants.FRAMEWORK_VENDOR) != null) {
 
-            while(servRefs == null) {
-                servRefs = srcBc.getServiceReferences(ServiceComponentRuntime.class.getName(), null);
+            try {
 
-                if (servRefs == null || servRefs.length == 0) {
+                ServiceReference<?>[] servRefs = null;
 
-                    logService.error("ERROR: service runtime not found, this will cause problems with shutdown");
-                    Thread.sleep(1000);
+                while (servRefs == null) {
+                    servRefs = srcBc.getServiceReferences(ServiceComponentRuntime.class.getName(), null);
 
-                } else {
+                    if (servRefs == null || servRefs.length == 0) {
 
-                    for (ServiceReference sr : servRefs) {
+                        logService.error("ERROR: service runtime not found, this will cause problems with shutdown");
+                        Thread.sleep(1000);
 
-                        boolean assign = sr.isAssignableTo(srcBc.getBundle(), ServiceComponentRuntime.class.getName());
-                        if (assign) {
+                    } else {
 
-                            ServiceReference scrServiceRef = srcBc.getServiceReference(ServiceComponentRuntime.class.getName());
-                            serviceComponentRuntime = (ServiceComponentRuntime) srcBc.getService(scrServiceRef);
+                        for (ServiceReference sr : servRefs) {
 
-                        } else {
-                            logService.error("Unable to assign service runtime");
+                            boolean assign = sr.isAssignableTo(srcBc.getBundle(), ServiceComponentRuntime.class.getName());
+                            if (assign) {
+
+                                ServiceReference scrServiceRef = srcBc.getServiceReference(ServiceComponentRuntime.class.getName());
+                                serviceComponentRuntime = (ServiceComponentRuntime) srcBc.getService(scrServiceRef);
+
+                            } else {
+                                logService.error("Unable to assign service runtime");
+                            }
+
                         }
-
                     }
                 }
+
+
+            } catch (Exception ex) {
+                logService.error("Logger Out : " + ex.getMessage());
+                //ex.printStackTrace();
             }
-
-
-        } catch (Exception ex) {
-            logService.error("Logger Out : " + ex.getMessage());
-            //ex.printStackTrace();
         }
+
         return serviceComponentRuntime;
     }
 
+    /*
     private Bundle installInternalBundleJars(BundleContext context, String bundleName) {
-
-
 
         Bundle installedBundle = null;
         try {
@@ -148,7 +145,6 @@ public final class Activator implements BundleActivator {
 
         return installedBundle;
     }
-
-
+    */
 
 }
