@@ -8,18 +8,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public final class Activator implements BundleActivator {
+final class Activator implements BundleActivator {
 
     private Logger logService;
 
-    public void start( final BundleContext bundleContext ) throws Exception {
+    public void start( final BundleContext bundleContext )  {
 
         String logIdent = this.getClass().getName().toLowerCase();
         logService = LoggerFactory.getLogger(logIdent);
 
     }
 
-    public void stop( final BundleContext bundleContext ) throws Exception {
+    public void stop( final BundleContext bundleContext )  {
 
 
         try {
@@ -94,7 +94,11 @@ public final class Activator implements BundleActivator {
                             if (assign) {
 
                                 ServiceReference scrServiceRef = srcBc.getServiceReference(ServiceComponentRuntime.class.getName());
-                                serviceComponentRuntime = (ServiceComponentRuntime) srcBc.getService(scrServiceRef);
+                                if(srcBc.getService(scrServiceRef) instanceof ServiceComponentRuntime) {
+                                    serviceComponentRuntime = (ServiceComponentRuntime) srcBc.getService(scrServiceRef);
+                                } else {
+                                    logService.error("Reference not instance of " + ServiceComponentRuntime.class.getName());
+                                }
 
                             } else {
                                 logService.error("Unable to assign service runtime");
