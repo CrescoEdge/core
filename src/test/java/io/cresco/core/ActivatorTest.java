@@ -1,8 +1,7 @@
 package io.cresco.core;
 
-import org.apache.sling.testing.mock.osgi.MockOsgi;
+import io.cresco.osgi.test.MockBundleContext;
 import org.junit.jupiter.api.Test;
-import org.osgi.framework.BundleContext;
 
 class ActivatorTest {
 
@@ -13,7 +12,7 @@ class ActivatorTest {
 
         try {
 
-            BundleContext bundleContext = MockOsgi.newBundleContext();
+            MockBundleContext bundleContext = new MockBundleContext();
             Activator activator = new Activator();
             activator.start(bundleContext);
 
@@ -29,7 +28,7 @@ class ActivatorTest {
 
         try {
 
-        BundleContext bundleContext = MockOsgi.newBundleContext();
+        MockBundleContext bundleContext = new MockBundleContext();
         Activator activator = new Activator();
         activator.start(bundleContext);
         activator.stop(bundleContext);
