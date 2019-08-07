@@ -73,8 +73,6 @@ public final class Activator implements BundleActivator {
 
         ServiceComponentRuntime serviceComponentRuntime = null;
 
-        if(srcBc.getProperty(Constants.FRAMEWORK_VENDOR) != null) {
-
             try {
 
                 ServiceReference<?>[] servRefs = null;
@@ -82,11 +80,11 @@ public final class Activator implements BundleActivator {
                 while (servRefs == null) {
                     servRefs = srcBc.getServiceReferences(ServiceComponentRuntime.class.getName(), null);
 
-                    if (servRefs == null || servRefs.length == 0) {
-
+                    if(srcBc.getProperty(Constants.FRAMEWORK_VENDOR) != null) {
+                        return null;
+                    } else if (servRefs == null || servRefs.length == 0) {
                         logService.error("ERROR: service runtime not found, this will cause problems with shutdown");
                         Thread.sleep(1000);
-
                     } else {
 
                         for (ServiceReference sr : servRefs) {
@@ -110,7 +108,6 @@ public final class Activator implements BundleActivator {
                 logService.error("Logger Out : " + ex.getMessage());
                 //ex.printStackTrace();
             }
-        }
 
         return serviceComponentRuntime;
     }
