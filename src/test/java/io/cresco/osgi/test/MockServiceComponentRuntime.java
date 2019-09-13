@@ -5,6 +5,7 @@ import org.osgi.service.component.runtime.ServiceComponentRuntime;
 import org.osgi.service.component.runtime.dto.ComponentConfigurationDTO;
 import org.osgi.service.component.runtime.dto.ComponentDescriptionDTO;
 import org.osgi.util.promise.Promise;
+import org.osgi.util.promise.Promises;
 
 import java.util.Collection;
 
@@ -26,7 +27,9 @@ public class MockServiceComponentRuntime implements ServiceComponentRuntime {
     @Override
     public ComponentDescriptionDTO getComponentDescriptionDTO(Bundle bundle, String name)
     {
-        return null;
+        ComponentDescriptionDTO agentDTO = new ComponentDescriptionDTO();
+
+        return agentDTO;
     }
 
     /**
@@ -62,6 +65,7 @@ public class MockServiceComponentRuntime implements ServiceComponentRuntime {
     @Override
     public Promise<Void> disableComponent(ComponentDescriptionDTO description)
     {
+        Promises.resolved(true);
        return null;
     }
 

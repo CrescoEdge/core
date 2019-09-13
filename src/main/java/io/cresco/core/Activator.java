@@ -63,7 +63,7 @@ final class Activator implements BundleActivator {
 
         } catch (Exception ex) {
             logService.error("Logger Out : " + ex.getMessage());
-            //ex.printStackTrace();
+            ex.printStackTrace();
         }
 
     }

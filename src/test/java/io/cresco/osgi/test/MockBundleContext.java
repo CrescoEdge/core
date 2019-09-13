@@ -157,7 +157,13 @@ public class MockBundleContext implements BundleContext
     @Override
     public Bundle[] getBundles()
     {
-        return new Bundle[0];
+
+        Bundle bundle = new MockBundle();
+        Bundle[] bundles = new Bundle[1];
+        bundles[0] = bundle;
+        return bundles;
+
+
     }
 
 
