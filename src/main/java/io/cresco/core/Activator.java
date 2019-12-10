@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-final class Activator implements BundleActivator {
+public final class Activator implements BundleActivator {
 
     private Logger logService;
 
