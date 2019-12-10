@@ -97,14 +97,14 @@
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-api</artifactId>
-            <version>1.11.3</version>
+            <version>1.10.4</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-service</artifactId>
-            <version>1.11.3</version>
+            <version>1.10.4</version>
             <scope>provided</scope>
         </dependency>
 
