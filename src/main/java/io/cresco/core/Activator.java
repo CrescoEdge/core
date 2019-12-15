@@ -1,34 +1,25 @@
 package io.cresco.core;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
+import org.osgi.framework.*;
 import org.osgi.service.component.runtime.ServiceComponentRuntime;
 import org.osgi.service.component.runtime.dto.ComponentDescriptionDTO;
-
-
-import java.net.URL;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 public final class Activator implements BundleActivator {
-    private List<String> levelList;
+
     private Logger logService;
 
-    public void start( final BundleContext bundleContext )
-            throws Exception {
+    public void start( final BundleContext bundleContext )  {
 
         String logIdent = this.getClass().getName().toLowerCase();
         logService = LoggerFactory.getLogger(logIdent);
 
     }
 
-    public void stop( final BundleContext bundleContext )
-            throws Exception {
+    public void stop( final BundleContext bundleContext )  {
 
 
         try {
@@ -72,56 +63,59 @@ public final class Activator implements BundleActivator {
 
         } catch (Exception ex) {
             logService.error("Logger Out : " + ex.getMessage());
-            //ex.printStackTrace();
+            ex.printStackTrace();
         }
 
     }
-
 
     private ServiceComponentRuntime getServiceComponentRuntime(BundleContext srcBc) {
 
+
         ServiceComponentRuntime serviceComponentRuntime = null;
-        try {
 
-            ServiceReference<?>[] servRefs = null;
+            try {
 
-            while(servRefs == null) {
-                servRefs = srcBc.getServiceReferences(ServiceComponentRuntime.class.getName(), null);
+                ServiceReference<?>[] servRefs = null;
 
-                if (servRefs == null || servRefs.length == 0) {
+                while (servRefs == null) {
+                    servRefs = srcBc.getServiceReferences(ServiceComponentRuntime.class.getName(), null);
 
-                    logService.error("ERROR: service runtime not found, this will cause problems with shutdown");
-                    Thread.sleep(1000);
+                    if (servRefs == null || servRefs.length == 0) {
+                        logService.error("ERROR: service runtime not found, this will cause problems with shutdown");
+                        Thread.sleep(1000);
+                    } else {
 
-                } else {
+                        for (ServiceReference sr : servRefs) {
 
-                    for (ServiceReference sr : servRefs) {
+                            boolean assign = sr.isAssignableTo(srcBc.getBundle(), ServiceComponentRuntime.class.getName());
+                            if (assign) {
 
-                        boolean assign = sr.isAssignableTo(srcBc.getBundle(), ServiceComponentRuntime.class.getName());
-                        if (assign) {
+                                ServiceReference scrServiceRef = srcBc.getServiceReference(ServiceComponentRuntime.class.getName());
+                                if(srcBc.getService(scrServiceRef) instanceof ServiceComponentRuntime) {
+                                    serviceComponentRuntime = (ServiceComponentRuntime) srcBc.getService(scrServiceRef);
+                                } else {
+                                    logService.error("Reference not instance of " + ServiceComponentRuntime.class.getName());
+                                }
 
-                            ServiceReference scrServiceRef = srcBc.getServiceReference(ServiceComponentRuntime.class.getName());
-                            serviceComponentRuntime = (ServiceComponentRuntime) srcBc.getService(scrServiceRef);
+                            } else {
+                                logService.error("Unable to assign service runtime");
+                            }
 
-                        } else {
-                            logService.error("Unable to assign service runtime");
                         }
-
                     }
                 }
+
+
+            } catch (Exception ex) {
+                logService.error("Logger Out : " + ex.getMessage());
+                //ex.printStackTrace();
             }
 
-
-        } catch (Exception ex) {
-            logService.error("Logger Out : " + ex.getMessage());
-            //ex.printStackTrace();
-        }
         return serviceComponentRuntime;
     }
 
+    /*
     private Bundle installInternalBundleJars(BundleContext context, String bundleName) {
-
-
 
         Bundle installedBundle = null;
         try {
@@ -148,7 +142,6 @@ public final class Activator implements BundleActivator {
 
         return installedBundle;
     }
-
-
+    */
 
 }
