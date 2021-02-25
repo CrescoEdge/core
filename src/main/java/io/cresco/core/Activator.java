@@ -1,5 +1,6 @@
 package io.cresco.core;
 
+import io.cresco.library.core.CoreState;
 import org.osgi.framework.*;
 import org.osgi.service.component.runtime.ServiceComponentRuntime;
 import org.osgi.service.component.runtime.dto.ComponentDescriptionDTO;
@@ -7,27 +8,37 @@ import org.osgi.service.component.runtime.dto.ComponentDescriptionDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Hashtable;
+
 
 public final class Activator implements BundleActivator {
 
     private Logger logService;
+    private CoreState coreState;
+
 
     public void start( final BundleContext bundleContext )  {
 
         String logIdent = this.getClass().getName().toLowerCase();
         logService = LoggerFactory.getLogger(logIdent);
 
+        coreState = new CoreStateImpl(bundleContext);
+
+        Hashtable<String, String> props = new Hashtable<String, String>();
+        props.put("Language", "English");
+        bundleContext.registerService(
+                CoreState.class.getName(),coreState, props);
+
     }
 
-    public void stop( final BundleContext bundleContext )  {
 
+    public void stop( final BundleContext bundleContext )  {
 
         try {
 
             ServiceComponentRuntime serviceComponentRuntime = getServiceComponentRuntime(bundleContext);
 
             Bundle controllerBundle = null;
-
 
             for (Bundle bundle : bundleContext.getBundles()) {
 
@@ -114,34 +125,5 @@ public final class Activator implements BundleActivator {
         return serviceComponentRuntime;
     }
 
-    /*
-    private Bundle installInternalBundleJars(BundleContext context, String bundleName) {
-
-        Bundle installedBundle = null;
-        try {
-            URL bundleURL = getClass().getClassLoader().getResource(bundleName);
-            if(bundleURL != null) {
-
-                String bundlePath = bundleURL.getPath();
-                installedBundle = context.installBundle(bundlePath,
-                        getClass().getClassLoader().getResourceAsStream(bundleName));
-
-
-            } else {
-                logService.error("core installInternalBundleJars() Bundle = null for " + bundleName);
-            }
-        } catch(Exception ex) {
-            logService.error("Logger Out : " + ex.getMessage());
-            //ex.printStackTrace();
-        }
-
-        if(installedBundle == null) {
-            logService.error("core installInternalBundleJars () Failed to load bundle " + bundleName + " exiting!");
-            System.exit(0);
-        }
-
-        return installedBundle;
-    }
-    */
 
 }
