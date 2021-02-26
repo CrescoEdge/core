@@ -30,20 +30,28 @@ public class CoreStateImpl implements CoreState {
                 public void run() {
                     try {
 
-                        boolean hasLaunched = false;
+                        boolean hasLaunched = true;
                         while (hasLaunched) {
                             Bundle controllerBundle = getController(bundleContext);
                             if (controllerBundle != null) {
-
+                                System.out.println("Controller Bundle found on Stop");
                                 if(controllerBundle.getState() == 32) {
+                                    System.out.println("Stopping Controller");
                                     controllerBundle.stop();
-                                    while (controllerBundle.getState() != 26) {
+                                    while ((controllerBundle.getState() != 26) && (controllerBundle.getState() != 4)) {
+                                        System.out.println("Waiting for controller to start : state=" + controllerBundle.getState());
                                         Thread.sleep(1000);
                                     }
+                                    System.out.println("Controller Stopped");
+
+                                } else {
+                                    System.out.println("Controller Bundle unexpected state: " + controllerBundle.getState());
                                 }
 
                                 hasLaunched = false;
 
+                            } else {
+                                System.out.println("Controller Bundle not found on Stop!");
                             }
                             Thread.sleep(1000);
 
@@ -52,13 +60,20 @@ public class CoreStateImpl implements CoreState {
                         while (!hasLaunched) {
                             Bundle controllerBundle = getController(bundleContext);
                             if (controllerBundle != null) {
+                                System.out.println("Controller Bundle found on Start");
+                                System.out.println("Starting Controller");
                                 controllerBundle.start();
                                 //32 is started
                                 while (controllerBundle.getState() != 32) {
+                                    System.out.println("Waiting for controller to start : state=" + controllerBundle.getState());
+
                                     Thread.sleep(1000);
                                 }
+                                System.out.println("Controller Started");
                                 hasLaunched = true;
 
+                            } else {
+                                System.out.println("Controller Bundle not found on Start!");
                             }
                             Thread.sleep(1000);
 
