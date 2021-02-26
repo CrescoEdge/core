@@ -3,26 +3,74 @@ package io.cresco.core;
 import io.cresco.library.core.CoreState;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.runtime.ServiceComponentRuntime;
-import org.osgi.service.component.runtime.dto.ComponentDescriptionDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CoreStateImpl implements CoreState {
 
     private Logger logService;
-
+    private BundleContext bundleContext;
 
     public CoreStateImpl(BundleContext bundleContext) {
         String logIdent = this.getClass().getName().toLowerCase();
         logService = LoggerFactory.getLogger(logIdent);
+        this.bundleContext = bundleContext;
 
     }
 
+    @Override
     public boolean restartController() {
         boolean isRestarted = false;
         try {
+
+            Runnable r = new Runnable() {
+                public void run() {
+                    try {
+
+                        boolean hasLaunched = false;
+                        while (hasLaunched) {
+                            Bundle controllerBundle = getController(bundleContext);
+                            if (controllerBundle != null) {
+
+                                if(controllerBundle.getState() == 32) {
+                                    controllerBundle.stop();
+                                    while (controllerBundle.getState() != 26) {
+                                        Thread.sleep(1000);
+                                    }
+                                }
+
+                                hasLaunched = false;
+
+                            }
+                            Thread.sleep(1000);
+
+                        }
+
+                        while (!hasLaunched) {
+                            Bundle controllerBundle = getController(bundleContext);
+                            if (controllerBundle != null) {
+                                controllerBundle.start();
+                                //32 is started
+                                while (controllerBundle.getState() != 32) {
+                                    Thread.sleep(1000);
+                                }
+                                hasLaunched = true;
+
+                            }
+                            Thread.sleep(1000);
+
+                        }
+
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            };
+
+            new Thread(r).start();
 
             isRestarted = true;
         } catch (Exception ex) {
@@ -31,42 +79,105 @@ public class CoreStateImpl implements CoreState {
         return isRestarted;
     }
 
+    @Override
+    public boolean restartFramework() {
 
-    public boolean stopController( final BundleContext bundleContext)  {
-        boolean isStopped = false;
         try {
 
-            ServiceComponentRuntime serviceComponentRuntime = getServiceComponentRuntime(bundleContext);
+            Bundle systemBundle = bundleContext.getBundle(0);
+            Thread t = new Thread("Stopper") {
+                public void run() {
 
-            Bundle controllerBundle = getController(bundleContext);
+                    // stopping bundle 0 (system bundle) stops the framework
+                    try {
 
-            if (controllerBundle != null) {
+                        systemBundle.update();
 
-                if(serviceComponentRuntime != null) {
-                    ComponentDescriptionDTO agentDTO = serviceComponentRuntime.getComponentDescriptionDTO(controllerBundle, "io.cresco.agent.core.AgentServiceImpl");
-                    if ((agentDTO != null) && (serviceComponentRuntime.isComponentEnabled(agentDTO))) {
+                        //systemBundle.stop();
 
-                        serviceComponentRuntime.disableComponent(agentDTO);
+                    } catch (BundleException be) {
+                        be.printStackTrace();
 
-                        while (!serviceComponentRuntime.disableComponent(agentDTO).isDone()) {
-                            Thread.sleep(100);
-                            //System.out.println("Shutdown didn't talk");
-                        }
-
-                    } else {
-                        logService.error("AGENT NOT FOUND OR NOT ENABLED!");
-                        //System.out.println("ERROR: AGENT NOT FOUND OR NOT ENABLED!");
                     }
-                } else {
-                    logService.error("ERROR: serviceComponentRuntime == null");
                 }
-            }
-
+            };
+            t.start();
         } catch (Exception ex) {
-            logService.error("Logger Out : " + ex.getMessage());
             ex.printStackTrace();
         }
-        return isStopped;
+        return true;
+    }
+
+
+    public boolean startController() {
+
+        Runnable r = new Runnable() {
+            public void run() {
+                try {
+                    boolean hasLaunched = false;
+                    while (!hasLaunched) {
+                        Bundle controllerBundle = getController(bundleContext);
+                        if (controllerBundle != null) {
+                                controllerBundle.start();
+                                //32 is started
+                                while (controllerBundle.getState() != 32) {
+                                    Thread.sleep(1000);
+                                }
+                                hasLaunched = true;
+
+                        }
+                        Thread.sleep(1000);
+
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        };
+
+        new Thread(r).start();
+
+        return true;
+    }
+
+    public boolean stopController() {
+
+
+        boolean isStopped = false;
+
+        Runnable r = new Runnable() {
+            public void run() {
+                try {
+                    boolean hasLaunched = false;
+                    while (hasLaunched) {
+                        Bundle controllerBundle = getController(bundleContext);
+                        if (controllerBundle != null) {
+
+                            if(controllerBundle.getState() == 32) {
+                                controllerBundle.stop();
+                                while (controllerBundle.getState() != 26) {
+                                    Thread.sleep(1000);
+                                }
+                            }
+
+                            hasLaunched = false;
+
+                        }
+                        Thread.sleep(1000);
+
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        };
+
+        new Thread(r).start();
+
+
+
+        isStopped = true;
+        return  isStopped;
     }
 
     public Bundle getController( final BundleContext bundleContext)  {
@@ -89,7 +200,6 @@ public class CoreStateImpl implements CoreState {
         }
         return controllerBundle;
     }
-
 
     public ServiceComponentRuntime getServiceComponentRuntime(BundleContext srcBc) {
 
@@ -136,8 +246,6 @@ public class CoreStateImpl implements CoreState {
 
         return serviceComponentRuntime;
     }
-
-
 
 }
 

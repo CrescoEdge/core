@@ -46,6 +46,7 @@ public final class Activator implements BundleActivator {
                 if (bundleName != null) {
                     if (bundleName.equals("io.cresco.controller")) {
                         controllerBundle = bundle;
+                        //controllerBundle.stop();
                     }
                 }
             }
