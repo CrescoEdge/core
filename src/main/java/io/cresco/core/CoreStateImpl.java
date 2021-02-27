@@ -9,6 +9,9 @@ import org.osgi.service.component.runtime.ServiceComponentRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.net.URL;
+
 public class CoreStateImpl implements CoreState {
 
     private Logger logService;
@@ -21,6 +24,75 @@ public class CoreStateImpl implements CoreState {
 
     }
 
+
+    @Override
+    public boolean updateController(String jarPath) {
+        boolean isRestarted = false;
+        try {
+
+            Runnable r = new Runnable() {
+                public void run() {
+                    try {
+
+                        File tempFile = new File(jarPath);
+                        boolean exists = tempFile.exists();
+                        if(exists) {
+
+                            boolean isEmbedded = true;
+                            String existingControllerPath = null;
+
+                            Bundle controllerBundle = getController();
+
+                            String jarLocation = controllerBundle.getLocation();
+                            if(jarLocation.contains("!/")) {
+                                String[] jarLocations = jarLocation.split("!/");
+                                existingControllerPath = jarLocations[1];
+                            } else {
+                                isEmbedded = false;
+                                existingControllerPath = jarLocation;
+                            }
+
+                            //stop controller
+                            stopController();
+
+                            //uninstall controller
+                            controllerBundle.uninstall();
+
+
+                            try {
+                                controllerBundle = installExternalBundleJars(jarPath);
+                                controllerBundle.start();
+
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+
+                                if(isEmbedded) {
+                                    controllerBundle = installInternalBundleJars(existingControllerPath);
+                                } else {
+                                    controllerBundle = installExternalBundleJars(existingControllerPath);
+                                }
+                                controllerBundle.start();
+                            }
+
+                        } else {
+                            System.out.println("controller jarfile: " + jarPath + " not found!");
+                        }
+
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            };
+
+            new Thread(r).start();
+
+            isRestarted = true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return isRestarted;
+    }
+
     @Override
     public boolean restartController() {
         boolean isRestarted = false;
@@ -30,54 +102,8 @@ public class CoreStateImpl implements CoreState {
                 public void run() {
                     try {
 
-                        boolean hasLaunched = true;
-                        while (hasLaunched) {
-                            Bundle controllerBundle = getController(bundleContext);
-                            if (controllerBundle != null) {
-                                System.out.println("Controller Bundle found on Stop");
-                                if(controllerBundle.getState() == 32) {
-                                    System.out.println("Stopping Controller");
-                                    controllerBundle.stop();
-                                    while ((controllerBundle.getState() != 26) && (controllerBundle.getState() != 4)) {
-                                        System.out.println("Waiting for controller to start : state=" + controllerBundle.getState());
-                                        Thread.sleep(1000);
-                                    }
-                                    System.out.println("Controller Stopped");
-
-                                } else {
-                                    System.out.println("Controller Bundle unexpected state: " + controllerBundle.getState());
-                                }
-
-                                hasLaunched = false;
-
-                            } else {
-                                System.out.println("Controller Bundle not found on Stop!");
-                            }
-                            Thread.sleep(1000);
-
-                        }
-
-                        while (!hasLaunched) {
-                            Bundle controllerBundle = getController(bundleContext);
-                            if (controllerBundle != null) {
-                                System.out.println("Controller Bundle found on Start");
-                                System.out.println("Starting Controller");
-                                controllerBundle.start();
-                                //32 is started
-                                while (controllerBundle.getState() != 32) {
-                                    System.out.println("Waiting for controller to start : state=" + controllerBundle.getState());
-
-                                    Thread.sleep(1000);
-                                }
-                                System.out.println("Controller Started");
-                                hasLaunched = true;
-
-                            } else {
-                                System.out.println("Controller Bundle not found on Start!");
-                            }
-                            Thread.sleep(1000);
-
-                        }
+                        stopController();
+                        startController();
 
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -124,78 +150,7 @@ public class CoreStateImpl implements CoreState {
     }
 
 
-    public boolean startController() {
-
-        Runnable r = new Runnable() {
-            public void run() {
-                try {
-                    boolean hasLaunched = false;
-                    while (!hasLaunched) {
-                        Bundle controllerBundle = getController(bundleContext);
-                        if (controllerBundle != null) {
-                                controllerBundle.start();
-                                //32 is started
-                                while (controllerBundle.getState() != 32) {
-                                    Thread.sleep(1000);
-                                }
-                                hasLaunched = true;
-
-                        }
-                        Thread.sleep(1000);
-
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        };
-
-        new Thread(r).start();
-
-        return true;
-    }
-
-    public boolean stopController() {
-
-
-        boolean isStopped = false;
-
-        Runnable r = new Runnable() {
-            public void run() {
-                try {
-                    boolean hasLaunched = false;
-                    while (hasLaunched) {
-                        Bundle controllerBundle = getController(bundleContext);
-                        if (controllerBundle != null) {
-
-                            if(controllerBundle.getState() == 32) {
-                                controllerBundle.stop();
-                                while (controllerBundle.getState() != 26) {
-                                    Thread.sleep(1000);
-                                }
-                            }
-
-                            hasLaunched = false;
-
-                        }
-                        Thread.sleep(1000);
-
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        };
-
-        new Thread(r).start();
-
-
-
-        isStopped = true;
-        return  isStopped;
-    }
-
-    public Bundle getController( final BundleContext bundleContext)  {
+    public Bundle getController()  {
         Bundle controllerBundle = null;
         try {
 
@@ -261,6 +216,137 @@ public class CoreStateImpl implements CoreState {
 
         return serviceComponentRuntime;
     }
+
+    private boolean startController() {
+
+        boolean isRestarted = false;
+        try {
+
+            boolean hasLaunched = false;
+
+            while (!hasLaunched) {
+                Bundle controllerBundle = getController();
+                if (controllerBundle != null) {
+                    System.out.println("Controller Bundle found on Start");
+                    System.out.println("Starting Controller");
+                    controllerBundle.start();
+                    //32 is started
+                    while (controllerBundle.getState() != 32) {
+                        System.out.println("Waiting for controller to start : state=" + controllerBundle.getState());
+
+                        Thread.sleep(1000);
+                    }
+                    System.out.println("Controller Started");
+                    hasLaunched = true;
+
+                } else {
+                    System.out.println("Controller Bundle not found on Start!");
+                }
+                Thread.sleep(1000);
+
+            }
+            isRestarted = true;
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return isRestarted;
+    }
+
+    private boolean stopController() {
+
+        boolean isRestarted = false;
+        try {
+            boolean hasLaunched = true;
+
+            while (hasLaunched) {
+                Bundle controllerBundle = getController();
+                if (controllerBundle != null) {
+                    System.out.println("Controller Bundle found on Stop");
+                    if(controllerBundle.getState() == 32) {
+                        System.out.println("Stopping Controller");
+                        controllerBundle.stop();
+                        while ((controllerBundle.getState() != 26) && (controllerBundle.getState() != 4)) {
+                            System.out.println("Waiting for controller to start : state=" + controllerBundle.getState());
+                            Thread.sleep(1000);
+                        }
+                        System.out.println("Controller Stopped");
+
+                    } else {
+                        System.out.println("Controller Bundle unexpected state: " + controllerBundle.getState());
+                    }
+
+                    hasLaunched = false;
+
+                } else {
+                    System.out.println("Controller Bundle not found on Stop!");
+                }
+                Thread.sleep(1000);
+
+            }
+
+            isRestarted = true;
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return isRestarted;
+    }
+
+
+    private Bundle installInternalBundleJars(String bundleName) {
+
+        Bundle installedBundle = null;
+        try {
+            URL bundleURL = getClass().getClassLoader().getResource(bundleName);
+            if(bundleURL != null) {
+
+                String bundlePath = bundleURL.getPath();
+                installedBundle = bundleContext.installBundle(bundlePath,
+                        getClass().getClassLoader().getResourceAsStream(bundleName));
+
+
+            } else {
+                System.out.println("Bundle = null for " + bundleName);
+            }
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
+
+        if(installedBundle == null) {
+            System.out.println("installInternalBundleJars() + Failed to load bundle " +bundleName + " exiting!");
+
+            System.exit(0);
+        }
+
+        return installedBundle;
+    }
+
+    private Bundle installExternalBundleJars(String bundleName) {
+
+        Bundle installedBundle = null;
+        try {
+            //URL bundleURL = new URL("file://" + bundleName);
+            //if(bundleURL != null) {
+
+            installedBundle = bundleContext.installBundle("file://" + bundleName);
+
+
+            //} else {
+            //    System.out.println("Bundle = null for " + bundleName);
+            //}
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
+
+        if(installedBundle == null) {
+            System.out.println("installInternalBundleJars() + Failed to load bundle " +bundleName + " exiting!");
+        }
+
+        return installedBundle;
+    }
+
+
 
 }
 
