@@ -24,8 +24,6 @@ public class CoreStateImpl implements CoreState {
 
     }
 
-
-    @Override
     public boolean updateController(String jarPath) {
         boolean isRestarted = false;
         try {
@@ -292,7 +290,6 @@ public class CoreStateImpl implements CoreState {
         }
         return isRestarted;
     }
-
 
     private Bundle installInternalBundleJars(String bundleName) {
 
