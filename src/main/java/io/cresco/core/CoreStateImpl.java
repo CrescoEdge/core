@@ -147,6 +147,34 @@ public class CoreStateImpl implements CoreState {
         return true;
     }
 
+    @Override
+    public boolean killJVM() {
+        //only use this when you have something restarting the entire agent, like a service
+        boolean isKilled = false;
+        try {
+
+            Runnable r = new Runnable() {
+                public void run() {
+                    try {
+
+                        stopController();
+                        System.exit(0);
+
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            };
+
+            new Thread(r).start();
+
+            isKilled = true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return isKilled;
+    }
+
 
     public Bundle getController()  {
         Bundle controllerBundle = null;
