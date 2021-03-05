@@ -92,6 +92,32 @@ public class CoreStateImpl implements CoreState {
     }
 
     @Override
+    public boolean stopController() {
+        boolean isStopped = false;
+        try {
+
+            Runnable r = new Runnable() {
+                public void run() {
+                    try {
+
+                        stopControllerInternal();
+
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            };
+
+            new Thread(r).start();
+
+            isStopped = true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return isStopped;
+    }
+
+    @Override
     public boolean restartController() {
         boolean isRestarted = false;
         try {
@@ -100,8 +126,8 @@ public class CoreStateImpl implements CoreState {
                 public void run() {
                     try {
 
-                        stopController();
-                        startController();
+                        stopControllerInternal();
+                        startControllerInternal();
 
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -157,7 +183,7 @@ public class CoreStateImpl implements CoreState {
                 public void run() {
                     try {
 
-                        stopController();
+                        stopControllerInternal();
                         System.exit(0);
 
                     } catch (Exception ex) {
@@ -243,7 +269,7 @@ public class CoreStateImpl implements CoreState {
         return serviceComponentRuntime;
     }
 
-    private boolean startController() {
+    private boolean startControllerInternal() {
 
         boolean isRestarted = false;
         try {
@@ -279,7 +305,7 @@ public class CoreStateImpl implements CoreState {
         return isRestarted;
     }
 
-    private boolean stopController() {
+    private boolean stopControllerInternal() {
 
         boolean isRestarted = false;
         try {
