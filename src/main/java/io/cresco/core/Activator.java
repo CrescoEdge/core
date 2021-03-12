@@ -51,7 +51,6 @@ public final class Activator implements BundleActivator {
                 }
             }
 
-
             if (controllerBundle != null) {
 
                 if(serviceComponentRuntime != null) {
