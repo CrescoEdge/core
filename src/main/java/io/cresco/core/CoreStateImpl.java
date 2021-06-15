@@ -55,7 +55,6 @@ public class CoreStateImpl implements CoreState {
 
                             try {
                                 Bundle newControllerBundle = installBundleJars(jarPath.toUri().toURL().toString());
-                                //Bundle newControllerBundle = null;
                                 newControllerBundle.start();
                                 logService.debug("Starting new controller");
 
@@ -177,7 +176,9 @@ public class CoreStateImpl implements CoreState {
                     try {
 
                         stopControllerInternal();
-                        System.exit(0);
+                        System.exit(1);
+                        //need to make this selectable, for now exit on error to allow restart
+                        //System.exit(0);
 
                     } catch (Exception ex) {
                         ex.printStackTrace();
