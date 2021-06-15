@@ -176,7 +176,7 @@ public class CoreStateImpl implements CoreState {
                     try {
 
                         stopControllerInternal();
-                        System.exit(0);
+                        System.exit(1);
 
                     } catch (Exception ex) {
                         ex.printStackTrace();
