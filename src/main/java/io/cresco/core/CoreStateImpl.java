@@ -55,13 +55,14 @@ public class CoreStateImpl implements CoreState {
 
                             try {
                                 Bundle newControllerBundle = installBundleJars(jarPath.toUri().toURL().toString());
+                                //Bundle newControllerBundle = null;
                                 newControllerBundle.start();
                                 logService.debug("Starting new controller");
 
                             } catch (Exception ex) {
                                 logService.error("Failed to install new controller");
                                 logService.error("recovery not yet implemented, self destruct");
-                                System.exit(0);
+                                System.exit(1);
                             }
 
                         } catch (Exception ex) {
@@ -176,7 +177,7 @@ public class CoreStateImpl implements CoreState {
                     try {
 
                         stopControllerInternal();
-                        System.exit(1);
+                        System.exit(0);
 
                     } catch (Exception ex) {
                         ex.printStackTrace();
