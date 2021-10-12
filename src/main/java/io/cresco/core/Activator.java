@@ -61,12 +61,12 @@ public final class Activator implements BundleActivator {
 
                         while (!serviceComponentRuntime.disableComponent(agentDTO).isDone()) {
                             Thread.sleep(100);
-                            //System.out.println("Shutdown didn't talk");
+                            //logService.error("Shutdown didn't talk");
                         }
 
                     } else {
                         logService.error("AGENT NOT FOUND OR NOT ENABLED!");
-                        //System.out.println("ERROR: AGENT NOT FOUND OR NOT ENABLED!");
+                        //logService.error("ERROR: AGENT NOT FOUND OR NOT ENABLED!");
                     }
                 } else {
                     logService.error("ERROR: serviceComponentRuntime == null");
