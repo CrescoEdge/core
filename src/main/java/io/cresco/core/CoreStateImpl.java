@@ -1,6 +1,5 @@
 package io.cresco.core;
 
-import com.sun.corba.se.spi.servicecontext.UEInfoServiceContext;
 import io.cresco.library.core.CoreState;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -164,6 +163,7 @@ public class CoreStateImpl implements CoreState {
         }
         return true;
     }
+
 
     @Override
     public boolean killJVM() {
