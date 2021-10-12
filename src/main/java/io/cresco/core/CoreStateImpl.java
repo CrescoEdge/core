@@ -9,8 +9,6 @@ import org.osgi.service.component.runtime.ServiceComponentRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStream;
-import java.net.JarURLConnection;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,8 +19,6 @@ public class CoreStateImpl implements CoreState {
     private BundleContext bundleContext;
 
     public CoreStateImpl(BundleContext bundleContext) {
-
-
 
         String logIdent = "io.cresco.agent.core" + "." + this.getClass().getName().toLowerCase();
         logService = LoggerFactory.getLogger(logIdent);
