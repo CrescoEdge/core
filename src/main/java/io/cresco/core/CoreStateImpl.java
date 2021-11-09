@@ -48,6 +48,7 @@ public class CoreStateImpl implements CoreState {
                             //uninstall controller
                             originalControllerBundle.uninstall();
 
+
                             try {
                                 Bundle newControllerBundle = installBundleJars(jarPath.toUri().toURL().toString());
                                 newControllerBundle.start();
