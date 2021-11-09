@@ -65,6 +65,7 @@ public final class Activator implements BundleActivator {
                         }
 
                     } else {
+
                         //logService.error("AGENT NOT FOUND OR NOT ENABLED!");
                         //logService.error("ERROR: AGENT NOT FOUND OR NOT ENABLED!");
                     }
