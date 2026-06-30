@@ -31,15 +31,10 @@
 
     <dependencies>
 
-        <!-- OSGi API versions managed by cresco-parent; build-time only -> provided -->
+        <!-- OSGi R8 API versions managed by cresco-parent; build-time only -> provided -->
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>osgi.cmpn</artifactId>
+            <artifactId>osgi.core</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -57,10 +52,16 @@
             <artifactId>org.osgi.service.cm</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!-- ServiceComponentRuntime API used by the Activator -->
+        <!-- Service Component Runtime API (ServiceComponentRuntime + runtime.dto) used by the Activator -->
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.service.component</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Promise is the return type of ServiceComponentRuntime.disableComponent(...) -->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.util.promise</artifactId>
             <scope>provided</scope>
         </dependency>
 
