@@ -62,7 +62,7 @@ public class CoreStateImpl implements CoreState {
 
                         } catch (Exception ex) {
                             logService.error("failure during controller update");
-                            ex.printStackTrace();
+                            logService.error(ex.getMessage(), ex);
                         }
                     }
                 };
@@ -75,7 +75,7 @@ public class CoreStateImpl implements CoreState {
 
         } catch (Exception ex) {
             logService.error("updateController() failure");
-            ex.printStackTrace();
+            logService.error(ex.getMessage(), ex);
         }
         return isRestarted;
     }
@@ -92,7 +92,7 @@ public class CoreStateImpl implements CoreState {
                         stopControllerInternal();
 
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        logService.error(ex.getMessage(), ex);
                     }
                 }
             };
@@ -101,7 +101,7 @@ public class CoreStateImpl implements CoreState {
 
             isStopped = true;
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logService.error(ex.getMessage(), ex);
         }
         return isStopped;
     }
@@ -119,7 +119,7 @@ public class CoreStateImpl implements CoreState {
                         startControllerInternal();
 
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        logService.error(ex.getMessage(), ex);
                     }
                 }
             };
@@ -128,7 +128,7 @@ public class CoreStateImpl implements CoreState {
 
             isRestarted = true;
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logService.error(ex.getMessage(), ex);
         }
         return isRestarted;
     }
@@ -149,14 +149,14 @@ public class CoreStateImpl implements CoreState {
                         //systemBundle.stop();
 
                     } catch (BundleException be) {
-                        be.printStackTrace();
+                        logService.error(be.getMessage(), be);
 
                     }
                 }
             };
             t.start();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logService.error(ex.getMessage(), ex);
         }
         return true;
     }
@@ -178,7 +178,7 @@ public class CoreStateImpl implements CoreState {
                         //System.exit(0);
 
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        logService.error(ex.getMessage(), ex);
                     }
                 }
             };
@@ -187,7 +187,7 @@ public class CoreStateImpl implements CoreState {
 
             isKilled = true;
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logService.error(ex.getMessage(), ex);
         }
         return isKilled;
     }
@@ -208,7 +208,7 @@ public class CoreStateImpl implements CoreState {
 
         } catch (Exception ex) {
             logService.error("Logger Out : " + ex.getMessage());
-            ex.printStackTrace();
+            logService.error(ex.getMessage(), ex);
         }
         return controllerBundle;
     }
@@ -244,7 +244,7 @@ public class CoreStateImpl implements CoreState {
             isRestarted = true;
 
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logService.error(ex.getMessage(), ex);
         }
         return isRestarted;
     }
@@ -283,7 +283,7 @@ public class CoreStateImpl implements CoreState {
             isRestarted = true;
 
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logService.error(ex.getMessage(), ex);
         }
         return isRestarted;
     }
@@ -301,14 +301,14 @@ public class CoreStateImpl implements CoreState {
 
 
             } else {
-                System.out.println("Bundle = null for " + bundleName);
+                logService.info("Bundle = null for " + bundleName);
             }
         } catch(Exception ex) {
-            ex.printStackTrace();
+            logService.error(ex.getMessage(), ex);
         }
 
         if(installedBundle == null) {
-            System.out.println("installInternalBundleJars() + Failed to load bundle " +bundleName + " exiting!");
+            logService.info("installInternalBundleJars() + Failed to load bundle " +bundleName + " exiting!");
 
             System.exit(0);
         }
@@ -338,7 +338,7 @@ public class CoreStateImpl implements CoreState {
                 installedBundle = bundleContext.installBundle(bundlePath);
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logService.error(ex.getMessage(), ex);
         }
 
         if(installedBundle == null) {

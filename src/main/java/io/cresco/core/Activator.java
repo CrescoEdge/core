@@ -87,7 +87,7 @@ public final class Activator implements BundleActivator {
             Thread.currentThread().interrupt();
         } catch (Exception ex) {
             logService.error("Logger Out : " + ex.getMessage());
-            ex.printStackTrace();
+            logService.error(ex.getMessage(), ex);
         } finally {
             scrTracker.close();
         }
