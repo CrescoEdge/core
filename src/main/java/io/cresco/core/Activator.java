@@ -4,6 +4,8 @@ import io.cresco.library.core.CoreState;
 import org.osgi.framework.*;
 import org.osgi.service.component.runtime.ServiceComponentRuntime;
 import org.osgi.service.component.runtime.dto.ComponentDescriptionDTO;
+import org.osgi.util.promise.Promise;
+import org.osgi.util.tracker.ServiceTracker;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +14,9 @@ import java.util.Hashtable;
 
 
 public final class Activator implements BundleActivator {
+
+    private static final long SCR_WAIT_MS = 10000L;
+    private static final long DISABLE_WAIT_MS = 10000L;
 
     private Logger logService;
     private CoreState coreState;
@@ -33,9 +38,17 @@ public final class Activator implements BundleActivator {
 
     public void stop( final BundleContext bundleContext )  {
 
+        // Track SCR rather than spin in an unbounded loop (which could hang framework shutdown
+        // if SCR has already gone away). The tracker is closed in the finally block.
+        ServiceTracker<ServiceComponentRuntime, ServiceComponentRuntime> scrTracker =
+                new ServiceTracker<>(bundleContext, ServiceComponentRuntime.class, null);
+        scrTracker.open();
         try {
 
-            ServiceComponentRuntime serviceComponentRuntime = getServiceComponentRuntime(bundleContext);
+            ServiceComponentRuntime serviceComponentRuntime = scrTracker.getService();
+            if (serviceComponentRuntime == null) {
+                serviceComponentRuntime = scrTracker.waitForService(SCR_WAIT_MS);
+            }
 
             Bundle controllerBundle = null;
 
@@ -45,7 +58,6 @@ public final class Activator implements BundleActivator {
                 if (bundleName != null) {
                     if (bundleName.equals("io.cresco.controller")) {
                         controllerBundle = bundle;
-                        //controllerBundle.stop();
                     }
                 }
             }
@@ -56,74 +68,30 @@ public final class Activator implements BundleActivator {
                     ComponentDescriptionDTO agentDTO = serviceComponentRuntime.getComponentDescriptionDTO(controllerBundle, "io.cresco.agent.core.AgentServiceImpl");
                     if ((agentDTO != null) && (serviceComponentRuntime.isComponentEnabled(agentDTO))) {
 
-                        serviceComponentRuntime.disableComponent(agentDTO);
-
-                        while (!serviceComponentRuntime.disableComponent(agentDTO).isDone()) {
+                        // Disable the controller's DS component ONCE, then wait (bounded) for that
+                        // single disable to complete. (Previously this called disableComponent twice
+                        // and waited without a timeout.)
+                        Promise<Void> disabled = serviceComponentRuntime.disableComponent(agentDTO);
+                        long deadline = System.currentTimeMillis() + DISABLE_WAIT_MS;
+                        while (!disabled.isDone() && System.currentTimeMillis() < deadline) {
                             Thread.sleep(100);
-                            //logService.error("Shutdown didn't talk");
                         }
 
-                    } else {
-
-                        //logService.error("AGENT NOT FOUND OR NOT ENABLED!");
-                        //logService.error("ERROR: AGENT NOT FOUND OR NOT ENABLED!");
                     }
                 } else {
-                    logService.error("ERROR: serviceComponentRuntime == null");
+                    logService.error("ERROR: serviceComponentRuntime == null; controller shutdown may be incomplete");
                 }
             }
 
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
         } catch (Exception ex) {
             logService.error("Logger Out : " + ex.getMessage());
             ex.printStackTrace();
+        } finally {
+            scrTracker.close();
         }
 
-    }
-
-    private ServiceComponentRuntime getServiceComponentRuntime(BundleContext srcBc) {
-
-
-        ServiceComponentRuntime serviceComponentRuntime = null;
-
-            try {
-
-                ServiceReference<?>[] servRefs = null;
-
-                while (servRefs == null) {
-                    servRefs = srcBc.getServiceReferences(ServiceComponentRuntime.class.getName(), null);
-
-                    if (servRefs == null || servRefs.length == 0) {
-                        logService.error("ERROR: service runtime not found, this will cause problems with shutdown");
-                        Thread.sleep(1000);
-                    } else {
-
-                        for (ServiceReference sr : servRefs) {
-
-                            boolean assign = sr.isAssignableTo(srcBc.getBundle(), ServiceComponentRuntime.class.getName());
-                            if (assign) {
-
-                                ServiceReference scrServiceRef = srcBc.getServiceReference(ServiceComponentRuntime.class.getName());
-                                if(srcBc.getService(scrServiceRef) instanceof ServiceComponentRuntime) {
-                                    serviceComponentRuntime = (ServiceComponentRuntime) srcBc.getService(scrServiceRef);
-                                } else {
-                                    logService.error("Reference not instance of " + ServiceComponentRuntime.class.getName());
-                                }
-
-                            } else {
-                                logService.error("Unable to assign service runtime");
-                            }
-
-                        }
-                    }
-                }
-
-
-            } catch (Exception ex) {
-                logService.error("Logger Out : " + ex.getMessage());
-                //ex.printStackTrace();
-            }
-
-        return serviceComponentRuntime;
     }
 
 

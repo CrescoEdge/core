@@ -213,51 +213,6 @@ public class CoreStateImpl implements CoreState {
         return controllerBundle;
     }
 
-    public ServiceComponentRuntime getServiceComponentRuntime(BundleContext srcBc) {
-
-        ServiceComponentRuntime serviceComponentRuntime = null;
-
-        try {
-
-            ServiceReference<?>[] servRefs = null;
-
-            while (servRefs == null) {
-                servRefs = srcBc.getServiceReferences(ServiceComponentRuntime.class.getName(), null);
-
-                if (servRefs == null || servRefs.length == 0) {
-                    logService.error("ERROR: service runtime not found, this will cause problems with shutdown");
-                    Thread.sleep(1000);
-                } else {
-
-                    for (ServiceReference sr : servRefs) {
-
-                        boolean assign = sr.isAssignableTo(srcBc.getBundle(), ServiceComponentRuntime.class.getName());
-                        if (assign) {
-
-                            ServiceReference scrServiceRef = srcBc.getServiceReference(ServiceComponentRuntime.class.getName());
-                            if(srcBc.getService(scrServiceRef) instanceof ServiceComponentRuntime) {
-                                serviceComponentRuntime = (ServiceComponentRuntime) srcBc.getService(scrServiceRef);
-                            } else {
-                                logService.error("Reference not instance of " + ServiceComponentRuntime.class.getName());
-                            }
-
-                        } else {
-                            logService.error("Unable to assign service runtime");
-                        }
-
-                    }
-                }
-            }
-
-
-        } catch (Exception ex) {
-            logService.error("Logger Out : " + ex.getMessage());
-            //ex.printStackTrace();
-        }
-
-        return serviceComponentRuntime;
-    }
-
     private boolean startControllerInternal() {
 
         boolean isRestarted = false;
